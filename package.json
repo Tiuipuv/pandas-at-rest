@@ -1,0 +1,42 @@
+{
+  "name": "pandas-at-rest",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Pandas at REST - An introduction to Web Development",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "ext": "js",
+    "ignore": [
+      "public"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tiuipuv/pandas-at-rest.git"
+  },
+  "keywords": [
+    "expressjs",
+    "web",
+    "tutorial",
+    "services",
+    "pandas"
+  ],
+  "author": "Jordan Jensen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tiuipuv/pandas-at-rest/issues"
+  },
+  "homepage": "https://github.com/Tiuipuv/pandas-at-rest#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.3"
+  }
+}
