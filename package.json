@@ -33,7 +33,8 @@
   },
   "homepage": "https://github.com/Tiuipuv/pandas-at-rest#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

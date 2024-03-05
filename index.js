@@ -6,6 +6,12 @@ import routerPandas from './routes/pandas.js';
 const app = express();
 const port = 8080;
 
+app.use(express.json());
+
+app.use('/api/*', (req, res, next) => {
+  console.log(`${req.method} ${req.baseUrl}`);
+  next();
+});
 app.use('/api/pandas', routerPandas);
 
 app.use('/api/*', (req, res) => {
