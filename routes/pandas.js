@@ -1,8 +1,16 @@
 import express from 'express';
-import sqlite3 from 'sqlite3';
+import { get_image } from './gather_icon.js';
+import db from '../db/db.js'
 
 const router = express.Router();
-const db = new sqlite3.Database('./db/zoo.db');
+
+function parseNum(val)
+{
+  const out = parseInt(val)
+  if (isNaN(out))
+    return undefined;
+  return out;
+}
 
 router.get('/:id?', (req, res) => {
   if (req.params.id)
@@ -13,18 +21,20 @@ router.get('/:id?', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  if (req.body?.sleepiness < 5)
-    return res.json({ error: 'sleepiness cannot be less than 5/10.' });
   const panda = {
     $name: req.body.name || 'Chester',
-    $size: req.body.size || 30,
-    $squishability: req.body.squishability ?? 7,
-    $favorite_bamboo_type: req.body.favoriteBambooType ?? 'original',
-    $sleepiness: req.body.sleepiness || 6
+    $biome: req.body.biome || 'rainforest',
+    $outfit: req.body.outfit,
+    $food: req.body.food || 'original',
+    $sleepiness: parseNum(req.body.sleepiness) ?? 6
   };
-  db.run('INSERT INTO pandas (name, size, squishability, favorite_bamboo_type, sleepiness) ' +
-    'VALUES ($name, $size, $squishability, $favorite_bamboo_type, $sleepiness)',
-    panda, (err) => handleResponse(err, { status: 'ok' }, res));
+  db.run('INSERT INTO pandas (name, biome, outfit, food, sleepiness) ' +
+    'VALUES ($name, $biome, $outfit, $food, $sleepiness)',
+    panda, function (err) {
+       // initiate stable diffusion request for image generation
+       get_image({id: this.lastID, ...panda});
+       handleResponse(err, { status: 'ok' }, res);
+    });
 });
 
 router.put(':id', (req, res) => {

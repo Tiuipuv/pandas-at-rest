@@ -15,6 +15,8 @@ async function refreshPandasList() {
   const pandas = await response.json();
   pandaHolder.innerHTML = '';
 
+  const def_img = 'https://img.freepik.com/free-vector/cute-panda-with-bamboo_138676-3053.jpg?w=826&t=st=1709514621~exp=1709515221~hmac=51b3cb9a913f0cd71dc9382e921104c5fcba0376156217ae4e9cb660556505ce'
+
   if (pandas.length > 0)
     pandas.forEach(panda => {
       const card = document.createElement('div');
@@ -22,16 +24,16 @@ async function refreshPandasList() {
         <div class="row g-0">
           <div class="col-md-4">
             <img
-              src="https://img.freepik.com/free-vector/cute-panda-with-bamboo_138676-3053.jpg?w=826&t=st=1709514621~exp=1709515221~hmac=51b3cb9a913f0cd71dc9382e921104c5fcba0376156217ae4e9cb660556505ce"
+              src="${panda.image ? 'data:image/png;base64,' + panda.image : def_img}"
               class="img-fluid rounded" alt="Cute Panda">
           </div>
           <div class="col-md-8">
             <div class="card-body">
               <h5 class="card-title">${panda.name}</h5>
               <p class="card-text">
-                <B>Size: </B>${panda.size}<BR>
-                <B>Squishability: </B>${panda.squishability}<BR>
-                <B>Favorite Bamboo Type: </B>${panda.favorite_bamboo_type}<BR>
+                <B>Biome: </B>${panda.biome}<BR>
+                <B>Outfit: </B>${panda.outfit}<BR>
+                <B>Favorite Food: </B>${panda.food}<BR>
                 <B>Sleepiness: </B>${panda.sleepiness}<BR>
               </p>
             </div>
