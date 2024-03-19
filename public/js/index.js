@@ -50,7 +50,7 @@ function setupSocket()
   };
 
   // If it closes, retry opening the socket
-  webSocket.onclose = (event) => {
+  webSocket.onclose = () => {
     console.log('WebSocket closed, reopening...');
     setTimeout(setupSocket, 1000);
   };
