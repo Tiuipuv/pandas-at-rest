@@ -1,9 +1,13 @@
 import express from 'express';
-import sqlite3 from 'sqlite3';
+import { get_image } from './supports/gather_icon.js';
+import db from '../db/db.js';
+import { broadcast, WS_EVENTS } from '../ws.js';
 
 const router = express.Router();
-const db = new sqlite3.Database('./db/zoo.db');
 
+//---------
+// Routes
+//---------
 router.get('/:id?', (req, res) => {
   if (req.params.id)
     db.get('SELECT * from pandas WHERE ROWID = ?', req.params.id,
@@ -13,18 +17,21 @@ router.get('/:id?', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  if (req.body?.sleepiness < 5)
-    return res.json({ error: 'sleepiness cannot be less than 5/10.' });
   const panda = {
     $name: req.body.name || 'Chester',
-    $size: req.body.size || 30,
-    $squishability: req.body.squishability ?? 7,
-    $favorite_bamboo_type: req.body.favoriteBambooType ?? 'original',
-    $sleepiness: req.body.sleepiness || 6
+    $biome: req.body.biome || 'rainforest',
+    $outfit: req.body.outfit,
+    $food: req.body.food || 'original',
+    $sleepiness: parseNum(req.body.sleepiness) ?? 6
   };
-  db.run('INSERT INTO pandas (name, size, squishability, favorite_bamboo_type, sleepiness) ' +
-    'VALUES ($name, $size, $squishability, $favorite_bamboo_type, $sleepiness)',
-    panda, (err) => handleResponse(err, { status: 'ok' }, res));
+  db.run('INSERT INTO pandas (name, biome, outfit, food, sleepiness) ' +
+    'VALUES ($name, $biome, $outfit, $food, $sleepiness)',
+    panda,
+    function (err) {
+      // initiate stable diffusion request for image generation
+      get_image({ id: this.lastID, ...panda });
+      handleResponse(err, { status: 'ok' }, res, WS_EVENTS.panda_created);
+    });
 });
 
 router.put(':id', (req, res) => {
@@ -35,18 +42,29 @@ router.put(':id', (req, res) => {
 router.delete(':id?', (req, res) => {
   if (req.params.id)
     db.get('DELETE from pandas WHERE ROWID = ?', req.params.id,
-      (err, row) => handleResponse(err, row, res));
+      (err, row) => handleResponse(err, row, res, WS_EVENTS.panda_deleted));
   else
-    db.all('DELETE from pandas', (err, rows) => handleResponse(err, rows, res));
+    db.all('DELETE from pandas', (err, rows) => handleResponse(err, rows, res, WS_EVENTS.panda_deleted));
 });
 
-function handleResponse(err, data, res) {
-  if (err)
-  {
+//-------------------
+// Helper functions
+//-------------------
+function handleResponse(err, data, res, ws_event) {
+  if (err) {
     console.log('Request error:\n' + err.message);
     return res.status(500).json({ error: err.message });
   }
+  if (ws_event)
+    broadcast(ws_event, data);
   res.json(data);
+}
+
+function parseNum(val) {
+  const out = parseInt(val);
+  if (isNaN(out))
+    return undefined;
+  return out;
 }
 
 export default router;
