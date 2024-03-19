@@ -6,18 +6,20 @@ const wss = new WebSocketServer({ port: ws_port });
 console.log(`Web Socket listening on port ${ws_port}`);
 
 wss.on('connection', ws => {
-  console.log('client connected')
+  console.log('client connected');
   ws.on('message', (data) => {
     console.log('received: %s', data);
   });
-})
+});
 
 export function broadcast(event, data) {
   wss.clients.forEach(client => {
-    client.send(JSON.stringify({event: event, data: data}))
-  })
+    client.send(JSON.stringify({event: event, data: data}));
+  });
 }
 
 export const WS_EVENTS = {
-  image_generated: 1
-}
+  panda_created: 1,
+  panda_updated: 2,
+  panda_deleted: 3
+};

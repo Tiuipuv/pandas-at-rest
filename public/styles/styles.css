@@ -12,3 +12,19 @@
   background: rgba(255, 0, 0, .2);
   transition: opacity .25s ease-in-out;
 }
+
+.img-container
+{
+  position: relative;
+}
+
+.img-container .overlay
+{
+  position: absolute;
+  left:0;
+  right:0;
+  bottom:10px;
+  margin-left:auto;
+  margin-right:auto;
+  z-index: 2;
+}
